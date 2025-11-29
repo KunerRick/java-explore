@@ -4,6 +4,7 @@ import com.example.chain.AbstractTaskHandler;
 import com.example.chain.HandleResult;
 import com.example.chain.TaskContext;
 import com.example.service.TaskService;
+import com.example.annotation.TaskHandlerInfo;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
@@ -11,6 +12,11 @@ import org.springframework.stereotype.Component;
 
 @Component
 @Slf4j
+@TaskHandlerInfo(
+    name = "CheckSubtitleHandler",
+    description = "检查视频字幕信息，确保字幕文件存在且格式正确",
+    order = 1
+)
 public class CheckSubtitleHandler extends AbstractTaskHandler {
     
     @Autowired

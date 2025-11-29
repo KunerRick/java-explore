@@ -5,7 +5,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 
-@Component
+// 暂时禁用自动测试
+//@Component
 public class TestChainRunner implements CommandLineRunner {
     
     @Autowired

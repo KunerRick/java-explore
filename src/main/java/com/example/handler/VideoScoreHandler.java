@@ -1,5 +1,6 @@
 package com.example.handler;
 
+import com.example.annotation.TaskHandlerInfo;
 import com.example.chain.AbstractTaskHandler;
 import com.example.chain.HandleResult;
 import com.example.chain.TaskContext;
@@ -15,6 +16,11 @@ import java.util.Random;
 
 @Component
 @Slf4j
+@TaskHandlerInfo(
+    name = "VideoScoreHandler",
+    description = "根据字幕内容和视频信息计算视频评分",
+    order = 3
+)
 public class VideoScoreHandler extends AbstractTaskHandler {
     
     @Autowired

@@ -1,5 +1,6 @@
 package com.example.handler;
 
+import com.example.annotation.TaskHandlerInfo;
 import com.example.chain.AbstractTaskHandler;
 import com.example.chain.HandleResult;
 import com.example.chain.TaskContext;
@@ -11,6 +12,11 @@ import org.springframework.stereotype.Component;
 
 @Component
 @Slf4j
+@TaskHandlerInfo(
+    name = "ExtractSubtitleHandler",
+    description = "提取视频字幕内容，解析字幕文本信息",
+    order = 2
+)
 public class ExtractSubtitleHandler extends AbstractTaskHandler {
     
     @Autowired

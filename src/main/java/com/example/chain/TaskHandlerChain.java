@@ -15,6 +15,10 @@ public class TaskHandlerChain {
         handlers.add(handler);
     }
     
+    public List<TaskHandler> getHandlers() {
+        return new ArrayList<>(handlers);
+    }
+    
     public void buildChain() {
         if (handlers.isEmpty()) {
             return;

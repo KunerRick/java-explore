@@ -2,6 +2,8 @@ package com.example.service;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.context.event.ApplicationReadyEvent;
+import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
@@ -75,5 +77,40 @@ public class TaskExecutor {
         } catch (Exception e) {
             log.error("恢复中断任务异常", e);
         }
+    }
+    
+    // 应用启动时执行一次检查
+    @EventListener(ApplicationReadyEvent.class)
+    public void onApplicationReady() {
+        log.info("=== 应用启动完成，开始执行启动时检查 ===");
+        
+        try {
+            // 1. 检查待处理任务
+            List<com.example.model.AsyncTask> pendingTasks = taskService.getPendingTasks(20);
+            log.info("启动检查：发现{}个待处理任务", pendingTasks.size());
+            
+            if (!pendingTasks.isEmpty()) {
+                log.info("启动检查：开始处理待处理任务");
+                for (com.example.model.AsyncTask task : pendingTasks) {
+                    if ("PENDING".equals(task.getStatus())) {
+                        executeTaskAsync(task.getTaskId());
+                        log.info("启动检查：已提交异步执行任务: {}", task.getTaskId());
+                    }
+                }
+            }
+            
+            // 2. 检查需要恢复的任务
+            log.info("启动检查：检查需要恢复的任务");
+            taskService.recoverInterruptedTasks();
+            
+            // 3. 系统状态检查
+            log.info("启动检查：系统状态检查完成");
+            log.info("启动检查：当前并发控制信号量可用许可: {}", semaphore.availablePermits());
+            
+        } catch (Exception e) {
+            log.error("启动检查异常", e);
+        }
+        
+        log.info("=== 启动检查完成 ===");
     }
 }

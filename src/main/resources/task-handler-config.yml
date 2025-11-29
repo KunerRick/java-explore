@@ -7,20 +7,6 @@ task-handlers:
       - ExtractSubtitleHandler
       - VideoScoreHandler
     description: "视频评分任务处理链"
-  
-  # 可以预定义其他任务类型
-  TEXT_PROCESS:
-    handlers:
-      - TextValidationHandler
-      - TextAnalysisHandler
-    description: "文本处理任务链"
-  
-  IMAGE_PROCESS:
-    handlers:
-      - ImageValidationHandler
-      - ImageAnalysisHandler
-      - ImageReportHandler
-    description: "图像处理任务链"
 
 # 调试配置
 debug:

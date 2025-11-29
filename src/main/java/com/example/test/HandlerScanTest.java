@@ -5,7 +5,7 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
 
-@Component
+// @Component
 public class HandlerScanTest implements CommandLineRunner {
     
     @Autowired

@@ -8,7 +8,6 @@ import org.springframework.stereotype.Component;
  * 调试配置
  */
 @Data
-@Component
 @ConfigurationProperties(prefix = "debug")
 public class DebugConfig {
     private boolean printAllBeans = false;

@@ -11,7 +11,6 @@ import java.util.Map;
  * 任务处理器配置
  */
 @Data
-@Component
 @ConfigurationProperties(prefix = "task-handlers")
 public class TaskHandlerConfig {
     

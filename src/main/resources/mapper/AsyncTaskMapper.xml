@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.mapper.AsyncTaskMapper">
+    
+    <resultMap id="BaseResultMap" type="com.example.model.AsyncTask">
+        <id column="id" jdbcType="BIGINT" property="id"/>
+        <result column="task_id" jdbcType="VARCHAR" property="taskId"/>
+        <result column="task_type" jdbcType="VARCHAR" property="taskType"/>
+        <result column="task_name" jdbcType="VARCHAR" property="taskName"/>
+        <result column="status" jdbcType="VARCHAR" property="status"/>
+        <result column="progress" jdbcType="INTEGER" property="progress"/>
+        <result column="current_step" jdbcType="VARCHAR" property="currentStep"/>
+        <result column="task_config" jdbcType="VARCHAR" property="taskConfig"/>
+        <result column="context_data" jdbcType="VARCHAR" property="contextData"/>
+        <result column="step_logs" jdbcType="VARCHAR" property="stepLogs"/>
+        <result column="error_message" jdbcType="VARCHAR" property="errorMessage"/>
+        <result column="max_retries" jdbcType="INTEGER" property="maxRetries"/>
+        <result column="retry_count" jdbcType="INTEGER" property="retryCount"/>
+        <result column="created_time" jdbcType="TIMESTAMP" property="createdTime"/>
+        <result column="updated_time" jdbcType="TIMESTAMP" property="updatedTime"/>
+        <result column="start_time" jdbcType="TIMESTAMP" property="startTime"/>
+        <result column="end_time" jdbcType="TIMESTAMP" property="endTime"/>
+        <result column="priority" jdbcType="INTEGER" property="priority"/>
+        <result column="timeout_seconds" jdbcType="INTEGER" property="timeoutSeconds"/>
+        <result column="version" jdbcType="INTEGER" property="version"/>
+        <result column="creator" jdbcType="VARCHAR" property="creator"/>
+    </resultMap>
+    
+    <insert id="insert" parameterType="com.example.model.AsyncTask" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO async_task
+        (task_id, task_type, task_name, status, progress, current_step,
+        task_config, context_data, step_logs, error_message, max_retries, retry_count,
+        created_time, updated_time, start_time, end_time, priority, timeout_seconds,
+        version, creator)
+        VALUES
+        (#{taskId}, #{taskType}, #{taskName}, #{status}, #{progress}, #{currentStep},
+        #{taskConfig}, #{contextData}, #{stepLogs}, #{errorMessage}, #{maxRetries}, #{retryCount},
+        #{createdTime}, #{updatedTime}, #{startTime}, #{endTime}, #{priority}, #{timeoutSeconds},
+        #{version}, #{creator})
+    </insert>
+    
+    <update id="updateProgressAndStatus">
+        UPDATE async_task SET
+        status = #{status},
+        progress = #{progress},
+        current_step = #{currentStep},
+        context_data = #{contextData},
+        step_logs = #{stepLogs},
+        error_message = #{errorMessage},
+        updated_time = NOW(),
+        version = version + 1
+        WHERE task_id = #{taskId} AND version = #{version}
+    </update>
+    
+    <update id="updateByTaskId" parameterType="com.example.model.AsyncTask">
+        UPDATE async_task SET
+        status = #{status},
+        progress = #{progress},
+        current_step = #{currentStep},
+        task_config = #{taskConfig},
+        context_data = #{contextData},
+        step_logs = #{stepLogs},
+        error_message = #{errorMessage},
+        retry_count = #{retryCount},
+        updated_time = #{updatedTime},
+        start_time = #{startTime},
+        end_time = #{endTime},
+        version = version + 1
+        WHERE task_id = #{taskId} AND version = #{version}
+    </update>
+    
+    <select id="selectByTaskId" resultMap="BaseResultMap">
+        SELECT * FROM async_task WHERE task_id = #{taskId}
+    </select>
+    
+    <select id="selectById" resultMap="BaseResultMap">
+        SELECT * FROM async_task WHERE id = #{id}
+    </select>
+    
+    <select id="selectByStatus" resultMap="BaseResultMap">
+        SELECT * FROM async_task WHERE status = #{status} ORDER BY priority DESC, created_time ASC
+    </select>
+    
+    <select id="selectPendingTasks" resultMap="BaseResultMap">
+        SELECT * FROM async_task 
+        WHERE status = 'PENDING' OR (status = 'PROCESSING' AND retry_count &lt; max_retries)
+        ORDER BY priority DESC, created_time ASC 
+        LIMIT #{limit}
+    </select>
+    
+    <select id="selectTasksToRecover" resultMap="BaseResultMap">
+        SELECT * FROM async_task 
+        WHERE status = 'PROCESSING' AND updated_time &lt; DATE_SUB(NOW(), INTERVAL 5 MINUTE)
+        ORDER BY priority DESC, updated_time ASC
+    </select>
+    
+</mapper>
